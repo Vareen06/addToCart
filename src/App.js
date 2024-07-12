@@ -1,23 +1,58 @@
-import logo from './logo.svg';
-import './App.css';
+import { React,useState } from 'react';
+import './App.css'
+import Navbar from './components/Navbar';
+import Shop from './components/Shop';
+import Cart from './components/Cart';
 
 function App() {
+
+  const [cart,setCart]=useState([]);
+  const [warning, setWarning]=useState(false)
+  const [show, setShow]=useState(true)
+
+  const handleClick=(item)=>{
+    // console.log(item)
+    let isPresent = false
+    cart.forEach((product)=>{
+      if(item.id===product.id){
+        isPresent=true
+      }
+    })
+    if(isPresent){
+      // console.log('Item already present')
+      setWarning(true)
+      setTimeout(()=>{
+        setWarning(false)
+      },2000)
+      return
+    }
+    setCart([...cart,item])
+  }
+  const handleChange = (item,d) => {
+    let ind = -1;
+    cart.forEach((data,index) => {
+      if(data.id === item.id)
+      ind = index;
+    });
+    const tempArr = cart;
+    tempArr[ind].amount +=d;
+    console.log(tempArr);
+
+    if(tempArr[ind].amount === 0){
+      tempArr[ind].amount =1;
+      
+    }
+    setCart([...tempArr])
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    
+    <div >
+      <Navbar size={cart.length}  setShow={setShow}/>
+      {
+        show ? <Shop handleClick={handleClick}/> : <Cart cart={cart} setCart={setCart} handleChange={handleChange}/>
+      }
+      {warning && <div className='warning'>Item Already Exist</div>}
+      
     </div>
   );
 }
